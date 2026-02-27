@@ -1,3 +1,9 @@
+if (!process.env.OPENAI_API_KEY) {
+  console.error("❌ OPENAI_API_KEY is missing!");
+  process.exit(1); // stops the server if key is not set
+} else {
+  console.log("✅ OPENAI_API_KEY is loaded"); // just confirms it's there
+}
 import express from "express";
 import { OpenAI } from "openai";  // Make sure to import correctly
 import dotenv from "dotenv";
