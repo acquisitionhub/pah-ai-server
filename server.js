@@ -1,81 +1,71 @@
-import express from "express";
-import { OpenAI } from "openai";
 import dotenv from "dotenv";
-import cors from "cors";
+dotenv.config(); // This must come first to load environment variables
 
-// Load environment variables from .env file
-dotenv.config();
-
-// Check if the OpenAI API key is set
+// Check if the API key is loaded
 if (!process.env.OPENAI_API_KEY) {
   console.error("❌ OPENAI_API_KEY is missing!");
-  process.exit(1); // stops the server if key is not set
+  process.exit(1); // Stop the server if the key is missing
 } else {
   console.log("✅ OPENAI_API_KEY is loaded");
 }
 
+import express from "express";
+import { OpenAI } from "openai";
+import cors from "cors";
+
+// Initialize Express app
 const app = express();
 app.use(express.json());
 
-// --- SECURE CORS SETUP ---
-// Replace with your actual website domain(s)
-const allowedOrigins = [
-  'https://www.patientacquisitionhub.com',    // your live site
-  'http://localhost:5173'         // local dev/testing
-];
-
-app.use(cors({
-  origin: function(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true); // allow requests
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  }
-}));
+// Allow all origins for testing (CORS)
+app.use(cors({ origin: '*' }));
 
 // Initialize OpenAI client with the API key
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Define the /api/chat route
 app.post("/api/chat", async (req, res) => {
   try {
     const { query } = req.body;
 
-    // Make a request to OpenAI API
+    // Request completion from OpenAI API
     const completion = await openai.chat.completions.create({
-      model: "gpt-5.2",
+      model: "gpt-5.2",  // Use the correct model
       messages: [
         {
           role: "system",
           content: `
-          You are an AI assistant for Patient Acquisition Hub.
-          You help dental practices understand:
-          - Missed call recovery
-          - Dental enquiry management
-          - Automated dental marketing
-          Encourage booking a strategy call.
-          `
+            You are an AI assistant for Patient Acquisition Hub.
+            You help dental practices understand:
+            - Missed call recovery
+            - Dental enquiry management
+            - Automated dental marketing
+            Encourage booking a strategy call.
+          `,
         },
-        { role: "user", content: query }
-      ]
+        { role: "user", content: query },
+      ],
     });
 
-    // Send back the response
+    // Send the response back to the client
     res.json({
-      response: completion.choices[0].message.content
+      response: completion.choices[0].message.content,
     });
 
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      error: error.message || "Server error"
+      error: error.message || "Server error",  // Improved error reporting
     });
   }
 });
 
+// Set the port (either from environment or default to 3000)
 const PORT = process.env.PORT || 3000;
+
+// Start the server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
