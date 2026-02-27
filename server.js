@@ -19,7 +19,7 @@ app.post("/api/chat", async (req, res) => {
 
     // Make a request to OpenAI API
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",  // Use the correct model (make sure it's available to your API key)
+      model: "gpt-5.2",  // Use the correct model (make sure it's available to your API key)
       messages: [
         {
           role: "system",
