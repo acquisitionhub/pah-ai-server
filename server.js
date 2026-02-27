@@ -1,71 +1,73 @@
-import dotenv from "dotenv";
-dotenv.config(); // This must come first to load environment variables
+// Import dependencies
+import express from 'express';
+import { OpenAI } from 'openai';  // Make sure the OpenAI package is properly installed
+import dotenv from 'dotenv';
+import cors from 'cors';
 
-// Check if the API key is loaded
+// Load environment variables from .env file
+dotenv.config();
+
+// Check if the OpenAI API key is set
 if (!process.env.OPENAI_API_KEY) {
   console.error("❌ OPENAI_API_KEY is missing!");
-  process.exit(1); // Stop the server if the key is missing
+  process.exit(1);  // Stops the server if the key is not set
 } else {
-  console.log("✅ OPENAI_API_KEY is loaded");
+  console.log("✅ OPENAI_API_KEY is loaded"); // Just confirms it's there
 }
-
-import express from "express";
-import { OpenAI } from "openai";
-import cors from "cors";
 
 // Initialize Express app
 const app = express();
-app.use(express.json());
 
-// Allow all origins for testing (CORS)
-app.use(cors({ origin: '*' }));
+// Middlewares
+app.use(express.json());  // To parse incoming JSON requests
+app.use(cors({ origin: '*' }));  // Allow all origins for testing, modify as needed
 
 // Initialize OpenAI client with the API key
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY,  // Use your OpenAI API key from environment variables
 });
 
-// Define the /api/chat route
-app.post("/api/chat", async (req, res) => {
+// Define the /api/chat endpoint
+app.post('/api/chat', async (req, res) => {
   try {
-    const { query } = req.body;
+    const { query } = req.body;  // Extract the query from the request body
 
-    // Request completion from OpenAI API
+    // Make a request to the OpenAI API
     const completion = await openai.chat.completions.create({
-      model: "gpt-5.2",  // Use the correct model
+      model: 'gpt-5.2',  // Use the correct model name (change as per the available model)
       messages: [
         {
-          role: "system",
+          role: 'system',
           content: `
-            You are an AI assistant for Patient Acquisition Hub.
-            You help dental practices understand:
-            - Missed call recovery
-            - Dental enquiry management
-            - Automated dental marketing
-            Encourage booking a strategy call.
+          You are an AI assistant for Patient Acquisition Hub.
+          You help dental practices understand:
+          - Missed call recovery
+          - Dental enquiry management
+          - Automated dental marketing
+          Encourage booking a strategy call.
           `,
         },
-        { role: "user", content: query },
+        { role: 'user', content: query },  // User's input
       ],
     });
 
-    // Send the response back to the client
+    // Send back the response from OpenAI
     res.json({
-      response: completion.choices[0].message.content,
+      response: completion.choices[0].message.content,  // Return the generated response
     });
 
   } catch (error) {
-    console.error(error);
+    console.error(error);  // Log error if any occurs
     res.status(500).json({
-      error: error.message || "Server error",  // Improved error reporting
+      error: error.message || 'Server error',  // Return error message
     });
   }
 });
 
-// Set the port (either from environment or default to 3000)
+// Define the port the server will run on
 const PORT = process.env.PORT || 3000;
 
-// Start the server
+// Start the Express server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
