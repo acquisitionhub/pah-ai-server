@@ -20,7 +20,7 @@ app.use(express.json());
 // --- SECURE CORS SETUP ---
 // Replace with your actual website domain(s)
 const allowedOrigins = [
-  'https://www.mywebsite.com',    // your live site
+  'https://www.patientacquisitionhub.com',    // your live site
   'http://localhost:5173'         // local dev/testing
 ];
 
