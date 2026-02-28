@@ -1,9 +1,3 @@
-import { OpenAI } from 'openai';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export async function processMessage(query) {
   const completion = await openai.chat.completions.create({
     model: 'gpt-4o-mini',
@@ -11,35 +5,16 @@ export async function processMessage(query) {
       {
         role: 'system',
         content: `
-You are an AI assistant for Patient Acquisition Hub who understands :
-          - Missed call recovery
-          - Dental enquiry management
-          - Automated dental marketing
- 
- If a dental practice owner wants to:
-- booking a Free trial.
-- Book a demo
-- Start a trial
-
-Extract:
-- name
-- phone
-- city
-
-Respond ONLY in valid JSON:
-
-{
-  "response": "chat reply",
-  "qualified": true/false,
-  "name": "",
-  "phone": "",
-  "city": ""
-}
+You are an AI assistant for Patient Acquisition Hub.
+You help dental practices understand:
+- Missed call recovery
+- Dental enquiry management
+- Automated dental marketing
+Encourage booking a Free trial.
 `
       },
       { role: 'user', content: query },
     ],
-    temperature: 0.4,
   });
 
   return completion.choices[0].message.content;
