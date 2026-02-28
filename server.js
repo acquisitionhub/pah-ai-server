@@ -44,7 +44,7 @@ app.post('/api/chat', async (req, res) => {
           - Missed call recovery
           - Dental enquiry management
           - Automated dental marketing
-          Encourage booking a strategy call.
+          Encourage booking a Free trial.
           `,
         },
         { role: 'user', content: query },  // User's input
