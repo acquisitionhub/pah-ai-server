@@ -17,12 +17,16 @@ You help dental practices understand:
 - Missed call recovery
 - Dental enquiry management
 - Automated dental marketing
-Encourage booking a Free trial.
-`
-      },
-      { role: 'user', content: query },
-    ],
-  });
 
-  return completion.choices[0].message.content;
+Encourage booking a Free trial.
+
+Always respond with a JSON object in this exact format:
+{
+  "response": "your reply to the user here",
+  "qualified": true or false,
+  "phone": "their phone number or null",
+  "name": "their name or null",
+  "city": "their city or null"
 }
+
+Set qualified to true only when the user has provided their name, phone number, and shown genuine interest.
